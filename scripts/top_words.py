@@ -97,10 +97,12 @@ class PHPCode:
 
 class GoCode:
 
-    class_keyword = 'struct'
-    function_keyword = 'function'
+    class_keyword = 'type'
+    function_keyword = 'func'
 
     STOPWORDS = []
+
+
 
 
 class CodeLanguageFactory:
@@ -178,6 +180,10 @@ def summarize(directory_path, code_language_str, top_n):
 
     for stopword in Utils.STOPWORDS + code_language.STOPWORDS:
         del overall[stopword]
+
+    for key in overall.keys():
+        if key.isdigit() or len(key) <= 1:
+            del overall[key]
 
     SourceCode.fancy_table_print(overall.most_common(top_n))
 
