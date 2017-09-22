@@ -2,7 +2,7 @@
 
 Collection of scripts to check how readable our source code can be.
 
-Inspired by [a Kevlin Henney talk]().
+Inspired by [a Kevlin Henney talk](https://www.youtube.com/watch?v=ZsHMHukIlJY).
 
 ## Available scripts
 
