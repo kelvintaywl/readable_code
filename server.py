@@ -4,7 +4,7 @@ import os
 from flask import Flask, jsonify, request
 
 from service.storage import Storage as DataStore
-from service.github import Github as GithubService
+from service.github import RepoInfo as GithubInfo, SourceCode as GithubSourceCode
 from service.source_code_analysis import SourceCodeAnalysis
 
 
@@ -33,12 +33,14 @@ def github_repo(owner, repo):
     db = DataStore(app.config['redis_url'])
     key = '{}/{}'.format(owner, repo)
 
+    repo_info = GithubInfo(owner, repo)
+
     try:
-        words = db.get(key, num_top_n_words)
+        words = db.get(key, num_top_n_words, last_updated=repo_info.last_updated)
         return jsonify(words)
     except LookupError:
-        with GithubService(owner, repo) as github:
-            analyser = SourceCodeAnalysis(github.code_dirpath, github.code_language)
+        with GithubSourceCode(owner, repo) as source_code:
+            analyser = SourceCodeAnalysis(source_code.code_dirpath, repo_info.code_language)
 
         words = analyser.get_words(num_top_n_words)
         db.set(key, words, num_top_n_words)

@@ -22,14 +22,14 @@ class Storage:
         pool = ConnectionPool.from_url(redis_url)
         self.store = StrictRedis(connection_pool=pool, decode_responses=True)
 
-    def get(self, source_code_repo, num_top_n_words):
+    def get(self, source_code_repo, num_top_n_words, last_updated):
         document = self.store.get(source_code_repo)
         if not document:
             raise LookupError
 
         document = json.loads(document)
         if (int(document.get('num_top_n_words', 0)) >= num_top_n_words)\
-                and (int(document.get('last_updated')) >= timestamp() - DAY):
+                and (int(document.get('last_updated')) >= last_updated):
 
             return document['words'][:num_top_n_words]
 
