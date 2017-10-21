@@ -28,11 +28,10 @@ class Storage:
             raise LookupError
 
         document = json.loads(document)
-
         if (int(document.get('num_top_n_words', 0)) >= num_top_n_words)\
                 and (int(document.get('last_updated')) >= timestamp() - DAY):
 
-            return document['words']
+            return document['words'][:num_top_n_words]
 
         raise LookupError
 
