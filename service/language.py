@@ -1,10 +1,14 @@
 import re
 
+import inflect
+
 
 class Language:
     """ Collection of language-related helper functions """
 
     FUNCTION_SIGNATURE_REGEX = re.compile('^([a-zA-Z0-9_^\(^:]+)[\(:].*$')
+
+    FORM_ENGINE = inflect.engine()
 
     STOPWORDS = [
         'a', 'able', 'about', 'across', 'after', 'all', 'almost', 'also',
@@ -56,3 +60,15 @@ class Language:
                 counter += 1
             if word_buffer:
                 yield word_buffer.lower()
+
+    @staticmethod
+    def singular(word):
+        singular_word = Language.FORM_ENGINE.singular_noun(word)
+        word_already_singular = singular_word is False
+
+        if word_already_singular:
+            return word
+        elif isinstance(singular_word, str):
+            return singular_word
+
+        raise ValueError('"{}" is not a word'.format(word))

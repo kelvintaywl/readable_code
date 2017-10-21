@@ -65,7 +65,7 @@ class SourceCodeFileAnalysis:
                         counter += 1
 
         words = [
-            list(Language.tokenize(class_or_function))
+            [Language.singular(word) for word in Language.tokenize(class_or_function)]
             for class_or_function in self.class_names + self.function_names
         ]
 
