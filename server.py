@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask import Flask, jsonify, request
+from flask import abort, Flask, jsonify, request
 
 from service.storage import Storage as DataStore
 from service.github import RepoInfo as GithubInfo, SourceCode as GithubSourceCode
@@ -33,8 +33,10 @@ def github_repo(owner, repo):
     db = DataStore(app.config['redis_url'])
     key = '{}/{}'.format(owner, repo)
 
-    repo_info = GithubInfo(owner, repo)
-
+    try:
+        repo_info = GithubInfo(owner, repo)
+    except ValueError:
+        return abort(501)
     try:
         words = db.get(key, num_top_n_words, last_updated=repo_info.last_updated)
         return jsonify(words)

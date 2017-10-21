@@ -27,8 +27,10 @@ class RepoInfo:
         resp = requests.get(url).json()
         if not resp:
             raise ValueError
-
-        code_language = CodeLanguageFactory.create(resp['language'].lower())
+        try:
+            code_language = CodeLanguageFactory.create(resp['language'].lower())
+        except ValueError:
+            raise ValueError('unsupported language detected')
         try:
             last_updated_str = max(resp['pushed_at'], resp['updated_at'])
             last_updated = calendar.timegm(
