@@ -1,7 +1,10 @@
 import json
 from time import time
 
-import redis
+from redis import (
+    ConnectionPool,
+    StrictRedis
+)
 
 
 def timestamp():
@@ -15,9 +18,9 @@ DAY = 24 * HOUR
 
 class Storage:
 
-    def __init__(self):
-        pool = redis.ConnectionPool()
-        self.store = redis.StrictRedis(connection_pool=pool, decode_responses=True)
+    def __init__(self, redis_url):
+        pool = ConnectionPool.from_url(redis_url)
+        self.store = StrictRedis(connection_pool=pool, decode_responses=True)
 
     def get(self, source_code_repo, num_top_n_words):
         document = self.store.get(source_code_repo)

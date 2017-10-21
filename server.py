@@ -1,3 +1,6 @@
+import logging
+import os
+
 from flask import Flask, jsonify, request
 
 from service.storage import Storage as DataStore
@@ -6,6 +9,11 @@ from service.source_code_analysis import SourceCodeAnalysis
 
 
 app = Flask(__name__)
+app.config['redis_url'] = os.getenv('REDIS_URL', 'redis://localhost:6379')
+
+log_handler = logging.StreamHandler()
+log_handler.setLevel(logging.INFO)
+app.logger.addHandler(log_handler)
 
 
 @app.route('/')
@@ -22,7 +30,7 @@ def github_repo(owner, repo):
 
     num_top_n_words = int(request.args.get('top_n', 10))
 
-    db = DataStore()
+    db = DataStore(app.config['redis_url'])
     key = '{}/{}'.format(owner, repo)
 
     try:
