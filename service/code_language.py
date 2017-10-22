@@ -1,3 +1,12 @@
+from pygments.lexers import (
+    GoLexer,
+    PhpLexer,
+    PythonLexer,
+    RubyLexer,
+    JavascriptLexer
+)
+
+
 class CodeLanguageFactory:
 
     @staticmethod
@@ -9,45 +18,47 @@ class CodeLanguageFactory:
             return PythonCode()
         if code_language in ('go', 'golang'):
             return GoCode()
+        if code_language == 'ruby':
+            return RubyCode()
+        if code_language == 'javascript':
+            return JavascriptCode()
 
         raise ValueError('unsupported code language')
 
 
 class BaseCodeLanguage:
 
+    LexerClass = None
+
     def verify(self, filepath):
         return filepath.endswith(self.extension)
 
 
+class JavascriptCode(BaseCodeLanguage):
+
+    LexerClass = JavascriptLexer
+    extension = '.js'
+
+
+class RubyCode(BaseCodeLanguage):
+
+    LexerClass = RubyLexer
+    extension = '.rb'
+
+
 class PythonCode(BaseCodeLanguage):
 
-    class_keyword = 'class'
-    function_keyword = 'def'
-
-    STOPWORDS = [
-        'init', 'iter', 'len', 'str', 'repr'
-    ]
-
+    LexerClass = PythonLexer
     extension = '.py'
 
 
 class PHPCode(BaseCodeLanguage):
 
-    class_keyword = 'class'
-    function_keyword = 'function'
-
-    STOPWORDS = [
-        'construct'
-    ]
-
+    LexerClass = PhpLexer
     extension = '.php'
 
 
 class GoCode(BaseCodeLanguage):
 
-    class_keyword = 'type'
-    function_keyword = 'func'
-
-    STOPWORDS = []
-
+    LexerClass = GoLexer
     extension = '.go'
